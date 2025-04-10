@@ -178,38 +178,6 @@ export class TicketingPlatform extends Contract {
 
   }
   
-  //scambio di due asset che si trovino entrambi nel contratto
-  private swap(asset1: AssetID, asset2: AssetID): void {
-
-    //assert che esistano listing per entrambi
-    assert(this.listings({asset:asset1}).exists);
-    assert(this.listings({asset:asset2}).exists);
-
-    //estraggo i proprietari
-    const owner1 = this.listings({asset:asset1}).value.owner;
-    const owner2 = this.listings({asset:asset2}).value.owner;
-
-    //scambio asset
-    sendAssetTransfer({
-      assetReceiver: owner2,
-      xferAsset: asset1,
-      assetAmount: 1,
-    });
-
-    sendAssetTransfer({
-      assetReceiver: owner1,
-      xferAsset: asset2,
-      assetAmount: 1,
-    });
-    
-
-    //eliminazione listing
-    this.listings({asset:asset1}).delete();
-    this.listings({asset:asset2}).delete();
-
-    
-
-  }
 
 
 }
