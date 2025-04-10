@@ -1,0 +1,14 @@
+name: Pull Request validation
+
+on: [pull_request]
+
+
+jobs:
+  ticketing-platform-contracts-ci:
+    name: Run ticketing-platform-contracts validation
+    uses: ./.github/workflows/ticketing-platform-contracts-ci.yaml
+
+  ticketing-platform-frontend-ci:
+    name: Run ticketing-platform-frontend validation
+    uses: ./.github/workflows/ticketing-platform-frontend-ci.yaml
+

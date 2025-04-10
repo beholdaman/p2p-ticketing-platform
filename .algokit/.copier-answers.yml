@@ -1,0 +1,10 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2.1.4
+_src_path: gh:algorandfoundation/algokit-fullstack-template
+author_email: chiara.passoni6@studenti.unimi.it
+author_name: cp
+cloud_provider: none
+contract_name: TicketingPlatform
+preset_name: production
+project_name: ticketing-platform
+

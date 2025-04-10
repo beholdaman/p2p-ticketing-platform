@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.vscode/**'
+      - '.idea/**'
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  ticketing-platform-contracts-validate:
+    name: Run ticketing-platform-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/ticketing-platform-contracts-ci.yaml
+
+  ticketing-platform-contracts-release:
+    name: Run ticketing-platform-contracts release
+    secrets: inherit
+    uses: ./.github/workflows/ticketing-platform-contracts-cd.yaml
+    needs: ticketing-platform-contracts-validate
+
+  ticketing-platform-frontend-validate:
+    name: Run ticketing-platform-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/ticketing-platform-frontend-ci.yaml
+
+  ticketing-platform-frontend-release:
+    name: Run ticketing-platform-frontend release
+    secrets: inherit
+    uses: ./.github/workflows/ticketing-platform-frontend-cd.yaml
+    needs: ticketing-platform-frontend-validate
