@@ -36,6 +36,7 @@ export class TicketingPlatform extends Contract {
     });
   }
 
+  
   //creazione di un nuovo listing
   //se non c'e' stato opt-in per l'asset viene fatto automaticamente
   public newListing(appCall: AppCallTxn, xfer: AssetTransferTxn, unitaryPrice: uint64, mbrPay: PayTxn ) :void {

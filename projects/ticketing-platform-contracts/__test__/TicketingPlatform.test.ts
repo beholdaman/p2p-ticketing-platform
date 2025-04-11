@@ -1,20 +1,54 @@
 import { describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
-import { algorandFixture } from '@algorandfoundation/algokit-utils/testing';
-import { Config } from '@algorandfoundation/algokit-utils';
+import { algorandFixture} from '@algorandfoundation/algokit-utils/testing';
+import { Config, microAlgos } from '@algorandfoundation/algokit-utils';
 import { TicketingPlatformClient, TicketingPlatformFactory } from '../contracts/clients/TicketingPlatformClient';
+import algokit from '@algorandfoundation/algokit-utils';
+import testing from '@algorandfoundation/algokit-utils';
+import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
 
 const fixture = algorandFixture();
 Config.configure({ populateAppCallResources: true });
 
 let appClient: TicketingPlatformClient;
 
+const algod = algokit.getAlgoClient();
+
 describe('TicketingPlatform', () => {
   beforeEach(fixture.beforeEach);
+
+  let testAssetsId: [number | bigint, number | bigint];
 
   beforeAll(async () => {
     await fixture.beforeEach();
     const { testAccount } = fixture.context;
     const { algorand } = fixture;
+
+    await algorand.account.fromEnvironment(
+      'buyer', microAlgos(100 * 1_000_000)
+   );
+    
+    await algorand.account.fromEnvironment(
+       'stableSeller', microAlgos(100* 1_000_000)
+    );
+    const stableSeller = await algorand.account.fromKmd('stableSeller');
+
+    testAssetsId = await Promise.all([
+      (
+        await algorand.send.assetCreate({
+          sender: stableSeller.addr,
+          total: BigInt(10_000),
+          decimals: 3,
+        })
+      ).confirmation.assetIndex!,
+      (
+        await algorand.send.assetCreate({
+          sender: stableSeller.addr,
+          total: BigInt(10_000),
+          decimals: 3,
+        })
+      ).confirmation.assetIndex!,
+    ]);
+
 
     const factory = new TicketingPlatformFactory({
       algorand,
@@ -23,24 +57,9 @@ describe('TicketingPlatform', () => {
 
     const createResult = await factory.send.create.createApplication();
     appClient = createResult.appClient;
+
+    await appClient.appClient.fundAppAccount(microAlgos(10 * 10_000_000));
   });
 
-  test('sum', async () => {
-    const a = 13;
-    const b = 37;
-    const sum = await appClient.send.doMath({ args: { a, b, operation: 'sum' } });
-    expect(sum.return).toBe(BigInt(a + b));
-  });
-
-  test('difference', async () => {
-    const a = 13;
-    const b = 37;
-    const diff = await appClient.send.doMath({ args: { a, b, operation: 'difference' } });
-    expect(diff.return).toBe(BigInt(a >= b ? a - b : b - a));
-  });
-
-  test('hello', async () => {
-    const hello = await appClient.send.hello({ args: { name: 'world!' } });
-    expect(hello.return).toBe('Hello, world!');
-  });
+  
 });
