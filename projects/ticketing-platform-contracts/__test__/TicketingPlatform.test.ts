@@ -18,8 +18,6 @@ let appClient: TicketingPlatformClient;
 
 const algod = algokit.getAlgoClient();
 
-const indexer = new algosdk.Indexer('', 'https://localnet-idx.algonode.cloud', '');
-
 
 describe('TicketingPlatform', () => {
   beforeEach(fixture.beforeEach);
@@ -71,7 +69,7 @@ describe('TicketingPlatform', () => {
     const createResult = await factory.send.create.createApplication();
     appClient = createResult.appClient;
 
-    await appClient.createTransaction.fundAppAccount({
+    await appClient.fundAppAccount({
       amount: microAlgos(10 * 10_000_000)
     });
 
@@ -89,7 +87,7 @@ describe('TicketingPlatform', () => {
     //pago solo il prezzo per listing
     const results = await Promise.all(
       testAssetsId.map(async (asset) =>
-        appClient.appClient.newListing(
+        appClient.newListing(
           {
             mbrPay: await algorand.createTransaction.payment({
               sender: stableSeller.addr,
@@ -172,7 +170,7 @@ describe('TicketingPlatform', () => {
             }),
             unitaryPrice: microAlgos(1_000_000),
           },
-          { sender: stableSeller2 }
+          {sender: stableSeller2}
         )
       )
     );
@@ -224,7 +222,7 @@ describe('TicketingPlatform', () => {
         [testAssetsId[0], microAlgos(3.2 * 1_000_000)],
         [testAssetsId[1], microAlgos(5.7 * 1_000_000)],
       ].map(async ([asset, unitaryPrice]) =>
-        appClient.createTransaction.changePrice(
+        appClient.changePrice(
           {
             asset,
             unitaryPrice,
@@ -271,7 +269,7 @@ describe('TicketingPlatform', () => {
         [testAssetsId[0], 6.7936 * 1_000_000],
         [testAssetsId[1], 12.1011 * 1_000_000],
       ].map(async ([asset, amountToPay]) =>
-        appClient.createTransaction.buy(
+        appClient.buy(
           {
             owner: stableSeller.addr,
             asset,
@@ -331,7 +329,7 @@ describe('TicketingPlatform', () => {
     //ritira tutti gli asset
     const results = await Promise.all(
       testAssetsId.map(async (asset) =>
-        appClient.createTransaction.withdraw(
+        appClient.withdraw(
           {
             asset,
           },

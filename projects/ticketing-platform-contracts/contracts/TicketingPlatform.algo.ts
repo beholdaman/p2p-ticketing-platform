@@ -45,6 +45,7 @@ export class TicketingPlatform extends Contract {
   
   //creazione di un nuovo listing
   //se non c'e' stato opt-in per l'asset viene fatto automaticamente
+  //@method
   public newListing(appCall: AppCallTxn, xfer: AssetTransferTxn, unitaryPrice: uint64, mbrPay: PayTxn ) :void {
 
     //il prezzo non puo' essere 0
@@ -94,6 +95,7 @@ export class TicketingPlatform extends Contract {
   }
 
   //cambiare il prezzo di un listing
+  //@method
   public changePrice(appCall: AppCallTxn, asset: AssetID, newPrice: uint64): void {
 
     //il nuovo prezzo non puo' essere 0
@@ -111,6 +113,7 @@ export class TicketingPlatform extends Contract {
   }
 
   //compra l'asset dato
+  //@method
   public buy(appCall: AppCallTxn, asset: AssetID, buyPay: PayTxn) : void {
 
     //estraggo prezzo attuale e proprietario dell'asset
@@ -157,6 +160,7 @@ export class TicketingPlatform extends Contract {
 
   //ritira un asset invenduto
   //elimina il relativo box recuperando le relative spese
+  //@method
   public withdrawAsset(appCall: AppCallTxn, asset: AssetID): void {
 
     //deve esistere un listing per l'asset dato
