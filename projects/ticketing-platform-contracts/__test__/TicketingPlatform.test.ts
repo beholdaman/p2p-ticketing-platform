@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
 import { algorandFixture} from '@algorandfoundation/algokit-utils/testing';
 import { Config, microAlgos } from '@algorandfoundation/algokit-utils';
-import { TicketingPlatformClient, TicketingPlatformFactory } from '../contracts/clients/TicketingPlatformClient';
+import { TicketingPlatformClient, TicketingPlatformFactory, TicketingPlatformParamsFactory } from '../contracts/clients/TicketingPlatformClient';
 import algokit from '@algorandfoundation/algokit-utils';
 import testing from '@algorandfoundation/algokit-utils';
 import { AlgoAmount } from '@algorandfoundation/algokit-utils/types/amount';
@@ -24,7 +24,7 @@ const indexer = new algosdk.Indexer('', 'https://localnet-idx.algonode.cloud', '
 describe('TicketingPlatform', () => {
   beforeEach(fixture.beforeEach);
 
-  let testAssetsId: [number | bigint,number |bigint];
+  let testAssetsId: [uint64 | bigint, uint64 |bigint];
 
   beforeAll(async () => {
     await fixture.beforeEach();
@@ -71,7 +71,10 @@ describe('TicketingPlatform', () => {
     const createResult = await factory.send.create.createApplication();
     appClient = createResult.appClient;
 
-    await appClient.appClient.fundAppAccount(microAlgos(10 * 10_000_000));
+    await appClient.createTransaction.fundAppAccount({
+      amount: microAlgos(10 * 10_000_000)
+    });
+
   });
 
 
@@ -79,14 +82,14 @@ describe('TicketingPlatform', () => {
   test('newListingNewAsset', async () => {
     const { algorand } = fixture;
     const stableSeller = await algorand.account.fromKmd('stableSeller');
-    const { appAddress } = await appClient.appClient.getAppReference();
+    const { appAddress } = await appClient.appClient.getAppAddress();
 
     //chiamata al metodo
     //creo un listing per 1 asset 
     //pago solo il prezzo per listing
     const results = await Promise.all(
       testAssetsId.map(async (asset) =>
-        appClient.newListing(
+        appClient.appClient.newListing(
           {
             mbrPay: await algorand.createTransaction.payment({
               sender: stableSeller.addr,
@@ -221,7 +224,7 @@ describe('TicketingPlatform', () => {
         [testAssetsId[0], microAlgos(3.2 * 1_000_000)],
         [testAssetsId[1], microAlgos(5.7 * 1_000_000)],
       ].map(async ([asset, unitaryPrice]) =>
-        appClient.setPrice(
+        appClient.createTransaction.changePrice(
           {
             asset,
             unitaryPrice,
@@ -268,7 +271,7 @@ describe('TicketingPlatform', () => {
         [testAssetsId[0], 6.7936 * 1_000_000],
         [testAssetsId[1], 12.1011 * 1_000_000],
       ].map(async ([asset, amountToPay]) =>
-        appClient.buy(
+        appClient.createTransaction.buy(
           {
             owner: stableSeller.addr,
             asset,
@@ -328,7 +331,7 @@ describe('TicketingPlatform', () => {
     //ritira tutti gli asset
     const results = await Promise.all(
       testAssetsId.map(async (asset) =>
-        appClient.withdraw(
+        appClient.createTransaction.withdraw(
           {
             asset,
           },

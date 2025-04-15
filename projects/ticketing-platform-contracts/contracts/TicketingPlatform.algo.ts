@@ -1,4 +1,10 @@
-import {  Contract } from '@algorandfoundation/tealscript';
+
+import { AppClient } from '@algorandfoundation/algokit-utils/types/app-client';
+import {Contract} from '@algorandfoundation/tealscript';
+
+/*npx --yes @algorandfoundation/algokit-client-generator generate 
+-a ./contracts/artifacts/TicketingPlatform.arc56.json 
+-o ./contracts/clients/TicketingPlatformClient.ts*/
 
 type listingKey = {asset: AssetID}; 
 //gli asset sono unici, anche con un nonce si potrebbero avere piu' listing per lo stesso asset
@@ -50,7 +56,7 @@ export class TicketingPlatform extends Contract {
     }).exists);
 
     //se non e' ancora stato fatto opt-in all'asset
-    if(!this.app.address.isOptedInToAsset(xfer.xferAsset)) {
+    if(this.app.address.isOptedInToAsset(xfer.xferAsset)) {
 
       //l'utente paghi sia per il listing che per l'opt-in
       verifyPayTxn(mbrPay, {
